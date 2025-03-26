@@ -1,3 +1,7 @@
+/*
+This class was adapted from https://github.com/macmade/CPP-ARC with some fixes related to invalid delete.
+*/
+
 #include <exception>
 #include <stdexcept>
 #include <iostream>
