@@ -1,5 +1,6 @@
 /*
-This class was adapted from https://github.com/macmade/CPP-ARC with some fixes related to invalid delete.
+This class was adapted from https://github.com/macmade/CPP-ARC with some fixes
+related to invalid delete.
 */
 
 #include <exception>
@@ -131,7 +132,7 @@ class ptr {
         this->ref_count = 0;
     }
             
-    ptr(T * ptr) {
+    ptr(T* ptr) {
         this->data = ptr;
         this->ref_count = 0;
                 
@@ -143,7 +144,7 @@ class ptr {
     }
             
     ptr(const ptr<T>& arp) {
-        this->data         = arp.data;
+        this->data = arp.data;
         this->ref_count = arp.ref_count;
                 
         if(this->data) {
