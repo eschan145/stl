@@ -15,5 +15,5 @@ jobs:
     - uses: actions/checkout@v4
     - name: Run
       run: |
-        g++ main.cpp
+        g++ main.cpp -o main.cpp
         .\main
