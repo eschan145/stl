@@ -198,6 +198,13 @@ class ptr {
     std::size_t ref_count;
 };
 
+template <typename T, typename... Args>
+ptr<T> make_ptr(Args&&... args) {
+    T* obj = new T(std::forward<Args>(args)...);
+    ptr<T> p(obj);
+    return p;
+}
+
 }  // namespace stl
 
 void* operator new(std::size_t size) noexcept(false) {

@@ -13,6 +13,6 @@ struct Node {
 };
 
 int main() {
-    Node node1;
-    Node node2;
+    stl::ptr<Node> node1 = stl::make_ptr<Node>();
+    stl::ptr<Node> node2 = stl::make_ptr<Node>();
 }
