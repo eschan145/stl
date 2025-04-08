@@ -10,7 +10,7 @@ struct Node {
     ~Node() {
         std::cout << "Node destroyed\n";
     }
-}
+};
 
 int main() {
     Node node1;

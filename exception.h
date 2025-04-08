@@ -24,6 +24,6 @@ class memory_error : public exception {
 class out_of_range : public exception {
  public:
     using exception::exception;
-}
+};
 
 }  // namespace stl
