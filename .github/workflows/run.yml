@@ -14,4 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Run
-      run: clang++ main.cpp
+      run: |
+        g++ main.cpp
+        .\main
