@@ -4,29 +4,13 @@ related to invalid delete.
 */
 
 #include <exception>
-#include <stdexcept>
 #include <iostream>
 #include <sstream>
-#include <string>
+
+
+#include "exception.h"
 
 namespace stl {
-
-class exception: public std::exception {
-    std::string message;
- public:
-    exception(const std::string& msg) {
-        this->message = msg;
-    }
-
-    const char* what() const noexcept override {
-        return this->message.c_str();
-    }
-};
-
-class memory_error : public exception {
-public:
-    using exception::exception;
-};
 
 namespace _memory
 {
@@ -126,7 +110,7 @@ std::size_t getref_count(void* p) {
 template <typename T>
 class ptr {
  public:
-            
+
     ptr(void) {
         this->data = nullptr;
         this->ref_count = 0;
