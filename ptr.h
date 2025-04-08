@@ -202,13 +202,13 @@ class ptr {
         return *(this->data);
     }
             
-    T* operator ->() {
+    T* operator->() {
         if (!this->data) {
             throw std::runtime_error("stl::ptr: Null pointer access!");
         }
         return this->data;
     }
-            
+
  private:
     T* data;
     std::size_t ref_count;
