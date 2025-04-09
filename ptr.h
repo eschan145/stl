@@ -188,7 +188,7 @@ class ptr {
             
     T* operator->() {
         if (!this->data) {
-            throw std::runtime_error("stl::ptr: Null pointer access!");
+            throw stl::memory_error("stl::ptr: Null pointer access!");
         }
         return this->data;
     }
