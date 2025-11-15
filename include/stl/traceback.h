@@ -27,7 +27,7 @@ void stacktrace() {
     line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
     DWORD displacement;
 
-    std::cerr << "Stack trace (" << frames << " frames):\n";
+    std::cerr << "Stack trace (" << std::dec << static_cast<int>(frames) << " frames):\n";
     for (USHORT i = 0; i < frames; ++i) {
         if (SymFromAddr(process, reinterpret_cast<DWORD64>(stack[i]), nullptr, symbol)) {
             if (SymGetLineFromAddr64(
