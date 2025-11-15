@@ -6,12 +6,43 @@
 //clang-format on
 
 #include <csignal>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <thread>
+#include <unordered_set>
+#include <vector>
 
 namespace stl {
 
+namespace internal {
+        
+std::string get_line(const std::string& filename, DWORD line_number) {
+    std::ifstream file(filename);
+    if (!file.is_open()) return "<unavailable>";
+
+    std::string line;
+    std::vector<std::string> lines;
+    DWORD current_line = 0;
+
+    while (std::getline(file, line)) {
+        ++current_line;
+        if (current_line >= line_number - 2 && current_line <= line_number + 2) {
+            lines.push_back(line);
+        }
+        if (current_line > line_number + 2) break;
+    }
+
+    if (lines.empty()) return "<unavailable>";
+
+    std::string result;
+    for (const auto& l : lines) {
+        result += "        " + l + "\n";
+    }
+    return result;
+}
+
+}
 void stacktrace() {
     void* stack[62];
     USHORT frames = CaptureStackBackTrace(0, 62, stack, nullptr);
@@ -27,16 +58,34 @@ void stacktrace() {
     line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
     DWORD displacement;
 
+    const std::unordered_set<std::string> blacklist = {
+        "seh_filter_exe",
+        "`__scrt_common_main_seh'::`1'::filt$0",
+        "strncpy",
+        "UnhandledExceptionFilter",
+        "_C_specific_handler",
+        "_chkstk",
+        "RtlLocateExtendedFeature",
+        "KiUserExceptionDispatcher"
+    };
+
     std::cerr << "Stack trace (" << std::dec << static_cast<int>(frames) << " frames):\n";
     for (USHORT i = 0; i < frames; ++i) {
+        if (i <= 1) continue;
+        
         if (SymFromAddr(process, reinterpret_cast<DWORD64>(stack[i]), nullptr, symbol)) {
+            if (i < 8 && blacklist.contains(symbol->Name)) continue;
+
             if (SymGetLineFromAddr64(
                     process, reinterpret_cast<DWORD64>(stack[i]), &displacement, &line)) {
-                std::cerr << "  " << i << ": " << symbol->Name << " - "
-                          << line.FileName << ":" << line.LineNumber << "\n";
+                std::cerr << "    #" << i << " in " << symbol->Name << " at "
+                          << line.FileName << ":" << std::dec << static_cast<int>(line.LineNumber) << "\n";
+
+                std::string snippet = internal::get_line(line.FileName, line.LineNumber);
+                std::cerr << snippet << "\n";
             } else {
-                std::cerr << "  " << i << ": " << symbol->Name
-                          << " - [line info unavailable]\n";
+                std::cerr << "    #" << i << " in " << symbol->Name
+                          << " - [line unavailable]\n";
             }
         } else {
             std::cerr << "  " << i << ": [symbol unavailable]\n";
@@ -70,7 +119,7 @@ void exception_handler() {
     }
 
     stacktrace();
-    std::abort();
+    std::exit(1);
 }
 
 LONG WINAPI sehHandler(EXCEPTION_POINTERS* pException) {
@@ -267,7 +316,7 @@ LONG WINAPI sehHandler(EXCEPTION_POINTERS* pException) {
 
     LeaveCriticalSection(&cs);
 
-    std::exit(er->ExceptionCode);
+    std::exit(1);
 }
 
 void signal_handler(int signal) {
