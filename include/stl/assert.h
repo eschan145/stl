@@ -6,7 +6,8 @@
 
 #undef assert
 
-template <typename... Msg> void assert_impl(bool condition, Msg&&... message) {
+template <typename... Msg>
+void assert_impl(bool condition, Msg&&... message) {
     if (condition) [[likely]]
         return;
 

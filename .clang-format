@@ -3,6 +3,7 @@ UseTab: Never
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Inline
+AlwaysBreakTemplateDeclarations: Yes
 ColumnLimit: 80
 PointerAlignment: Left
 FixNamespaceComments: true
