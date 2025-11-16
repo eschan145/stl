@@ -7,6 +7,11 @@ if (POLICY CMP0141)
 endif()
 
 project(stl)
+
+add_compile_options(/Z7)
+
+set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded)
+
 option(STL_HEADER_ONLY "Build as header-only" OFF)
 
 if (STL_HEADER_ONLY)
