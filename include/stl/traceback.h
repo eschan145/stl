@@ -17,7 +17,7 @@ namespace stl {
 
 namespace internal {
         
-std::string get_line(const std::string& filename, DWORD line_number) {
+inline std::string get_line(const std::string& filename, DWORD line_number) {
     std::ifstream file(filename);
     if (!file.is_open()) return "<unavailable>";
 
@@ -43,7 +43,7 @@ std::string get_line(const std::string& filename, DWORD line_number) {
 }
 
 }
-void stacktrace() {
+inline void stacktrace() {
     void* stack[62];
     USHORT frames = CaptureStackBackTrace(0, 62, stack, nullptr);
     HANDLE process = GetCurrentProcess();
@@ -71,7 +71,7 @@ void stacktrace() {
 
     std::cerr << "Stack trace (" << std::dec << static_cast<int>(frames) << " frames):\n";
     for (USHORT i = 0; i < frames; ++i) {
-        if (i <= 1) continue;
+        if (i == 0) continue;
         
         if (SymFromAddr(process, reinterpret_cast<DWORD64>(stack[i]), nullptr, symbol)) {
             if (i < 8 && blacklist.contains(symbol->Name)) continue;
@@ -95,7 +95,7 @@ void stacktrace() {
     free(symbol);
 }
 
-void exception_handler() {
+inline void exception_handler() {
     std::cerr << "===  TERMINATE HANDLER ===\n";
     std::cerr << "Thread ID: " << std::this_thread::get_id() << "\n";
 
@@ -122,7 +122,7 @@ void exception_handler() {
     std::exit(1);
 }
 
-LONG WINAPI sehHandler(EXCEPTION_POINTERS* pException) {
+inline LONG WINAPI sehHandler(EXCEPTION_POINTERS* pException) {
     static CRITICAL_SECTION cs;
     static bool csInitialized = false;
 
@@ -319,7 +319,7 @@ LONG WINAPI sehHandler(EXCEPTION_POINTERS* pException) {
     std::exit(1);
 }
 
-void signal_handler(int signal) {
+inline void signal_handler(int signal) {
     std::cerr << "=== Signal Handler ===\n";
     std::string name = "Unknown";
     switch (signal) {
@@ -347,7 +347,7 @@ void signal_handler(int signal) {
     stacktrace();
 }
 
-void install_exception_handler() {
+inline void install_exception_handler() {
     std::set_terminate(exception_handler);
 
     SetUnhandledExceptionFilter(sehHandler);
